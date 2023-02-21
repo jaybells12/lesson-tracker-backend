@@ -1,12 +1,5 @@
 import { Schema, model } from 'mongoose';
-
-// TypeScript Interfaces
-interface ILesson {
-  name: string;
-  area: string;
-  section: string;
-  group?: string;
-}
+import { ILesson } from '../interfaces/Model-Interfaces.js';
 
 // Mongoose Schemas
 const lessonSchema = new Schema<ILesson>({
@@ -41,7 +34,7 @@ const lessonSchema = new Schema<ILesson>({
 })
 
 // Mongoose Model
-const Lesson = model<ILesson>("Lesson", lessonSchema);
+export const Lesson = model<ILesson>("Lesson", lessonSchema);
 
-// Export
-module.exports = { Lesson }
+// // Export
+// module.exports = { Lesson }

@@ -1,20 +1,6 @@
 import { Schema, model } from 'mongoose';
+import { IUser, Role } from '../interfaces/Model-Interfaces'
 
-// TypeScript interfaces
-enum Role {
-  Admin = "ADMIN",
-  Director = "DIRECTOR",
-  Guide = "GUIDE",
-  Parent = "PARENT"
-}
-
-interface IUser {
-  username: string;
-  password: string;
-  email: string;
-  role: Role;
-  created: Date;
-}
 
 // Mongoose Schemas
 const userSchema = new Schema<IUser>({
@@ -49,7 +35,7 @@ const userSchema = new Schema<IUser>({
 },  { timestamps: true })
 
 // Mongoose Model
-const User = model<IUser>("User", userSchema);
+export const User = model<IUser>("User", userSchema);
 
-// Export
-module.exports = { User }
+// // Export
+// module.exports = { User }

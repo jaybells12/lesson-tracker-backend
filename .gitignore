@@ -4,3 +4,4 @@ dist/
 LessonData.json
 tsconfig.json
 test/
+testfile.js

@@ -1,22 +1,5 @@
-import { Schema, model, Types } from 'mongoose';
-
-// TypeScript Interfaces
-interface ILessonProgress {
-  lesson: Types.ObjectId;
-  status: string;
-}
-
-interface IName {
-  first: string;
-  last: string;
-}
-
-interface IStudent {
-  name: IName;
-  dob: Date;
-  progress: ILessonProgress[];
-}
-
+import { Schema, model } from 'mongoose';
+import { IName, IStudent } from '../interfaces/Model-Interfaces'
 
 // Mongoose Schemas
 // Had to modify schematypes.d.ts in mongoose/types, in the "class SchemaTypeOptions<T>"
@@ -43,20 +26,20 @@ const nameSchema = new Schema<IName>({
   }
 }, { _id: false, id: false })
 
-const lessonProgressSchema = new Schema<ILessonProgress>({
-    lesson: {
-      type: Schema.Types.ObjectId,
-      required: [true, "Lesson Progress: Missing {PATH} ID."]
-    },
-    status: {
-      type: String,
-      cast: false,
-      required: [true, "Lesson Progress: Missing {PATH}."],
-      uppercase: true,
-      match: [/I|P|M|N/, "Lesson Progress: {VALUE} is not a valid value for {PATH}."]
+// const lessonProgressSchema = new Schema<ILessonProgress>({
+//     lesson: {
+//       type: Schema.Types.ObjectId,
+//       required: [true, "Lesson Progress: Missing {PATH} ID."]
+//     },
+//     status: {
+//       type: String,
+//       cast: false,
+//       required: [true, "Lesson Progress: Missing {PATH}."],
+//       uppercase: true,
+//       match: [/I|P|M|N/, "Lesson Progress: {VALUE} is not a valid value for {PATH}."]
 
-    },
-}, { _id: false, id: false })
+//     },
+// }, { _id: false, id: false })
 
 const studentSchema = new Schema<IStudent>({
   name: {
@@ -69,11 +52,20 @@ const studentSchema = new Schema<IStudent>({
     cast: false,
     required: [true, "Student: Missing {PATH}."],
   },
-  progress: [lessonProgressSchema]
+  progress: {
+    type: Map,
+    of: {
+      type: String,
+      cast: false,
+      uppercase: true,
+      match: [/I|P|M|N/, "Lesson Progress: {VALUE} is not a valid value for {PATH}."]
+    },
+    default: () => ({})
+  }
 });
 
 // Mongoose Model
-const Student = model<IStudent>("Student", studentSchema);
+export const Student = model<IStudent>("Student", studentSchema);
 
-// Export
-module.exports = { Student }
+// // Export
+// module.exports = { Student }

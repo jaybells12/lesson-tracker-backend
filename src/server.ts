@@ -9,13 +9,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //Connect to database
-const dbUri = process.env.DATABASE_URI;
+const dbUri = "mongodb://localhost:27017/" //process.env.DATABASE_URI;
 if(dbUri){
   mongoose.set('strictQuery', false)
   mongoose.connect(dbUri)
     .catch( err => console.log(`Database connection error: ${err}`))
 }else{
-  throw Error("Missing (Env)ironment variable")
+  throw Error("Missing (Env)ironment variable: Database URI")
 }
 const db = mongoose.connection;
 db.on("error", (err: Error) => {
