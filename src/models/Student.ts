@@ -1,4 +1,4 @@
-import { Schema, model, Types, Error } from 'mongoose';
+import { Schema, model, Types, Error, UpdateQuery } from 'mongoose';
 import { IName, IStudent } from '../interfaces/Model-Interfaces'
 
 // Mongoose Schemas
@@ -52,7 +52,7 @@ const studentSchema = new Schema<IStudent>({
 // First - use built in validator, however certain invalid strings can still pass,
 // Second - cast found Id string to Object Id, back to string, if the recast string and the found string match, then it's a valid ID; 
 studentSchema.pre(['findOneAndUpdate', 'updateMany'], function(next) {
-  const updateObj = this.getUpdate()
+  const updateObj:UpdateQuery<IStudent> | null = this.getUpdate()
   if(updateObj && '$set' in updateObj){
     for( let key in updateObj.$set){
       let results = key.split('.');
