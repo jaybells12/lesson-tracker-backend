@@ -14,7 +14,7 @@ export interface ILesson {
   group?: string;
 }
 
-export interface ILessonMap {
+export interface IProgressMap {
   [lessonId: string]: string;
 }
 
@@ -26,7 +26,7 @@ export interface IName {
 export interface IStudent {
   name: IName;
   dob: Date;
-  progress: ILessonMap;
+  progress: IProgressMap;
 }
 
 export interface IUser {
@@ -43,4 +43,6 @@ export interface IProgress {
   flag: string;
 }
 
-export interface IProgressArray extends Array<IProgress> {}
+export interface IProgressArray{
+  lessons: Array<IProgress>
+}

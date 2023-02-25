@@ -1,14 +1,13 @@
 import { Schema, model } from 'mongoose';
 import { ILesson } from '../interfaces/Model-Interfaces.js';
 
-// Mongoose Schemas
 const lessonSchema = new Schema<ILesson>({
   name: {
     type: String,
     cast: false,
     trim: true,
     lowercase: true,
-    required: [true, "Lesson: Missing {PATH}."],
+    required: [true, "Missing required field."],
     unique: true,
   },
   area: {
@@ -16,14 +15,14 @@ const lessonSchema = new Schema<ILesson>({
     cast: false,
     trim: true,
     lowercase: true,
-    required: [true, "Lesson: Missing {PATH}."]
+    required: [true, "Missing required field."]
   },
   section: {
     type: String,
     cast: false,
     trim: true,
     lowercase: true,
-    required: [true, "Lesson: Missing {PATH}."]
+    required: [true, "Missing required field."]
   },
   group: {
     type: String,
@@ -33,8 +32,4 @@ const lessonSchema = new Schema<ILesson>({
   }
 })
 
-// Mongoose Model
 export const Lesson = model<ILesson>("Lesson", lessonSchema);
-
-// // Export
-// module.exports = { Lesson }

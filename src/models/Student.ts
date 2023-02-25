@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types, Error } from 'mongoose';
 import { IName, IStudent } from '../interfaces/Model-Interfaces'
 
 // Mongoose Schemas
@@ -11,46 +11,30 @@ const nameSchema = new Schema<IName>({
     cast: false,
     trim: true,
     lowercase: true,
-    required: [true, "Name: Missing {PATH} name."],
-    minLength: [2, "Name: {PATH} name is too short. Minimum length is 2 characters."],
-    maxLength: [16, "Name: {PATH} name is too long. Maximum length is 16 characters."],
+    required: [true, "Missing required field."],
+    minLength: [2, "{PATH} name is too short. Minimum length is 2 characters."],
+    maxLength: [16, "{PATH} name is too long. Maximum length is 16 characters."],
   },
   last: {
     type: String,
     cast: false,
     trim: true,
     lowercase: true,
-    required: [true, "Name: Missing {PATH} name."],
-    minLength: [2, "Name: {PATH} name is too short. Minimum length is 2 characters."],
-    maxLength: [16, "Name: {PATH} name is too long. Maximum length is 16 characters."],
+    required: [true, "Missing required field."],
+    minLength: [2, "{PATH} name is too short. Minimum length is 2 characters."],
+    maxLength: [16, "{PATH} name is too long. Maximum length is 16 characters."],
   }
 }, { _id: false, id: false })
-
-// const lessonProgressSchema = new Schema<ILessonProgress>({
-//     lesson: {
-//       type: Schema.Types.ObjectId,
-//       required: [true, "Lesson Progress: Missing {PATH} ID."]
-//     },
-//     status: {
-//       type: String,
-//       cast: false,
-//       required: [true, "Lesson Progress: Missing {PATH}."],
-//       uppercase: true,
-//       match: [/I|P|M|N/, "Lesson Progress: {VALUE} is not a valid value for {PATH}."]
-
-//     },
-// }, { _id: false, id: false })
 
 const studentSchema = new Schema<IStudent>({
   name: {
     type: nameSchema,
-    // default: () => ({}),
-    required: [true, "Student: Missing {PATH}."]
+    required: [true, "Missing required field."]
   },
   dob: {
     type: Date,
     cast: false,
-    required: [true, "Student: Missing {PATH}."],
+    required: [true, "Missing required field."],
   },
   progress: {
     type: Map,
@@ -58,14 +42,37 @@ const studentSchema = new Schema<IStudent>({
       type: String,
       cast: false,
       uppercase: true,
-      match: [/I|P|M|N/, "Lesson Progress: {VALUE} is not a valid value for {PATH}."]
+      match: [/I|P|M|N/, "{VALUE} is not a valid value for {PATH}."]
     },
     default: () => ({})
   }
 });
 
-// Mongoose Model
-export const Student = model<IStudent>("Student", studentSchema);
+// Middleware to validate Object IDs - Two main parts
+// First - use built in validator, however certain invalid strings can still pass,
+// Second - cast found Id string to Object Id, back to string, if the recast string and the found string match, then it's a valid ID; 
+studentSchema.pre(['findOneAndUpdate', 'updateMany'], function(next) {
+  const updateObj = this.getUpdate()
+  if(updateObj && '$set' in updateObj){
+    for( let key in updateObj.$set){
+      let results = key.split('.');
+      if( results[0] === 'progress'){
+        const err = new Error.ValidationError(
+          new Error.ValidatorError({
+            message: "Unable to cast key as ObjectId",
+            path: key,
+            value: results[1]
+          })
+        )
+        if(!(Types.ObjectId.isValid(results[1]))){
+          return next(err);
+        }else if(!((String)(new Types.ObjectId(results[1])) === results[1])){
+          return next(err);
+        }
+      }
+    }
+  }
+  next();
+})
 
-// // Export
-// module.exports = { Student }
+export const Student = model<IStudent>("Student", studentSchema);
