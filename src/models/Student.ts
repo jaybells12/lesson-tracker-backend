@@ -1,4 +1,4 @@
-import { Schema, model, Types, Error, UpdateQuery } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 import { IName, IStudent } from '../interfaces/Model-Interfaces'
 
 // Mongoose Schemas
@@ -12,8 +12,8 @@ const nameSchema = new Schema<IName>({
     trim: true,
     lowercase: true,
     required: [true, "Missing required field."],
-    minLength: [2, "{PATH} name is too short. Minimum length is 2 characters."],
-    maxLength: [16, "{PATH} name is too long. Maximum length is 16 characters."],
+    minLength: [2, "{VALUE} is too short. Minimum length is 2 characters."],
+    maxLength: [16, "{VALUE} is too long. Maximum length is 16 characters."],
   },
   last: {
     type: String,
@@ -21,8 +21,8 @@ const nameSchema = new Schema<IName>({
     trim: true,
     lowercase: true,
     required: [true, "Missing required field."],
-    minLength: [2, "{PATH} name is too short. Minimum length is 2 characters."],
-    maxLength: [16, "{PATH} name is too long. Maximum length is 16 characters."],
+    minLength: [2, "{VALUE} is too short. Minimum length is 2 characters."],
+    maxLength: [16, "{VALUE} is too long. Maximum length is 16 characters."],
   }
 }, { _id: false, id: false })
 
@@ -42,37 +42,29 @@ const studentSchema = new Schema<IStudent>({
       type: String,
       cast: false,
       uppercase: true,
-      match: [/I|P|M|N/, "{VALUE} is not a valid value for {PATH}."]
+      match: [/I|N|P|M/, "Invalid value: {VALUE}"]
     },
-    default: () => ({})
-  }
-});
-
-// Middleware to validate Object IDs - Two main parts
-// First - use built in validator, however certain invalid strings can still pass,
-// Second - cast found Id string to Object Id, back to string, if the recast string and the found string match, then it's a valid ID; 
-studentSchema.pre(['findOneAndUpdate', 'updateMany'], function(next) {
-  const updateObj:UpdateQuery<IStudent> | null = this.getUpdate()
-  if(updateObj && '$set' in updateObj){
-    for( let key in updateObj.$set){
-      let results = key.split('.');
-      if( results[0] === 'progress'){
-        const err = new Error.ValidationError(
-          new Error.ValidatorError({
-            message: "Unable to cast key as ObjectId",
-            path: key,
-            value: results[1]
-          })
-        )
-        if(!(Types.ObjectId.isValid(results[1]))){
-          return next(err);
-        }else if(!((String)(new Types.ObjectId(results[1])) === results[1])){
-          return next(err);
+    validate: { 
+      validator: function(input: Map<string, string>){
+        for(let [key] of input){
+          if(!(Types.ObjectId.isValid(key)) || !((String)(new Types.ObjectId(key)) === key)){
+            return false;
+          }
         }
-      }
-    }
+        return true;
+      },  
+      message: "Invalid key."
+    },
+    default: () => (new Map())
   }
-  next();
-})
+}, {virtuals: {
+  fullname: {
+    get (this: IStudent) {
+      let first: string = this.name.first[0].toUpperCase() + this.name.first.substring(1)
+      let last: string = this.name.last[0].toUpperCase() + this.name.last.substring(1)
+      return `${first} ${last}`
+    } 
+  }
+}, toJSON:{virtuals: true}, toObject:{virtuals:true}});
 
 export const Student = model<IStudent>("Student", studentSchema);

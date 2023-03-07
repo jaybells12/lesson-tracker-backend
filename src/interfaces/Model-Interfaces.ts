@@ -1,5 +1,3 @@
-import { Types } from 'mongoose';
-
 export enum Role {
   Admin = "ADMIN",
   Director = "DIRECTOR",
@@ -14,10 +12,6 @@ export interface ILesson {
   group?: string;
 }
 
-export interface IProgressMap {
-  [lessonId: string]: string;
-}
-
 export interface IName {
   first: string;
   last: string;
@@ -26,7 +20,8 @@ export interface IName {
 export interface IStudent {
   name: IName;
   dob: Date;
-  progress: IProgressMap;
+  progress: Map<string, string>;
+  fullname: string;
 }
 
 export interface IUser {
@@ -34,15 +29,6 @@ export interface IUser {
   password: string;
   email: string;
   role: Role;
-  created: Date;
-}
-
-export interface IProgress {
-  lesson: Types.ObjectId;
-  students: Types.ObjectId[];
-  flag: string;
-}
-
-export interface IProgressArray{
-  lessons: Array<IProgress>
+  createdAt: Date;
+  updatedAt: Date;
 }
