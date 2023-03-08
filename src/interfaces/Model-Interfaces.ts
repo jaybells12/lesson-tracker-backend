@@ -1,3 +1,6 @@
+import mongoose from "mongoose";
+import {} from "mongoose"
+
 export enum Role {
   Admin = "ADMIN",
   Director = "DIRECTOR",
@@ -31,4 +34,8 @@ export interface IUser {
   role: Role;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IUserMethods {
+  comparePassword(candidatePassword: string, callback: (error: Error | null, results?: boolean) => void): void;
 }
