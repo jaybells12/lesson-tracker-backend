@@ -1,5 +1,5 @@
-import mongoose, { Schema, model, Model } from 'mongoose';
-import { IUser, IUserMethods, Role } from '../interfaces/Model-Interfaces'
+import mongoose, { Schema, model, Model } from "mongoose";
+import { IUser, IUserMethods, Role } from "../interfaces/Model-Interfaces"
 import bcrypt from "bcrypt";
 
 const SALT_WORK_FACTOR = 10;

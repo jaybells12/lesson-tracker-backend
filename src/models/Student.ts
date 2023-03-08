@@ -1,5 +1,5 @@
-import { Schema, model, Types } from 'mongoose';
-import { IName, IStudent } from '../interfaces/Model-Interfaces'
+import { Schema, model, Types } from "mongoose";
+import { IName, IStudent } from "../interfaces/Model-Interfaces"
 
 // Mongoose Schemas
 // Had to modify schematypes.d.ts in mongoose/types, in the "class SchemaTypeOptions<T>"
