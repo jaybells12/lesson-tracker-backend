@@ -15,7 +15,6 @@ export const getLessons = async (req: Request, res: Response, next: NextFunction
 export const getLessonById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id }  = req.params;
-    if(!id) throw { name: "QueryError", message: "Missing Lesson Id."};
     const results = Lesson.findById(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){

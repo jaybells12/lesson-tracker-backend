@@ -1,10 +1,15 @@
-import mongoose, { Schema, model, Model } from "mongoose";
-import { IUser, IUserMethods, Role } from "../interfaces/Model-Interfaces"
+import mongoose, { Schema, model} from "mongoose";
+import { IUser, IUserMethods, UserModel, Role } from "../interfaces/Model-Interfaces"
 import bcrypt from "bcrypt";
 
-const SALT_WORK_FACTOR = 10;
+/*
+* Mongoose Schemas
+* Had to modify schematypes.d.ts in mongoose/types, in the "class SchemaTypeOptions<T>"
+* "cast" was set only to string, changed to "string | boolean" to allow mongoose disable casting
+* for a single path - https://thecodebarbarian.com/whats-new-in-mongoose-5-11-custom-casting-for-paths.html
+*/
 
-type UserModel = Model<IUser, {}, IUserMethods>
+const SALT_WORK_FACTOR = 10;
 
 const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   username: {
@@ -33,16 +38,15 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     uppercase: true,
     enum: Role,
     required: [true, "Missing required field."]
+  },
+  refreshToken: {
+    type: String,
+    cast: false,
   }
 }, { timestamps: true })
 
-
-//Callback accepts two parameters, either error object or null & boolean value
-userSchema.methods.comparePassword = function(candidatePassword, callback){
-  bcrypt.compare(candidatePassword, this.password, function(err, results){
-    if(err) return callback(err);
-    callback(null, results);
-  })
+userSchema.methods.comparePassword = function(candidatePassword){
+  return bcrypt.compare(candidatePassword, this.password)
 }
 
 //Password Hashing with Length Validation Middleware (Save)

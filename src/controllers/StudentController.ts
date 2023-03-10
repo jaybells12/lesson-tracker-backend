@@ -15,7 +15,6 @@ export const getStudents = async (req: Request, res: Response, next: NextFunctio
 export const getStudentById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id }  = req.params;
-    if(!id) throw { name: "QueryError", message: "Missing Student Id."}
     const results = await Student.findById(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){
@@ -26,8 +25,6 @@ export const getStudentById = async (req: Request, res: Response, next: NextFunc
 export const createStudent = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { name, dob }: IStudent = req.body;
-    if(!name) throw { name: "QueryError", message: "Missing 'name' data."}
-    if(!dob) throw {name: "QueryError", message: "Missing 'dob' data."}
     const student: HydratedDocument<IStudent> = new Student({
       name,
       dob
@@ -42,7 +39,6 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
 export const updateStudent = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id } = req.params;
-    if(!id) throw { name: "QueryError", message: "Missing student Id."}
     const { name, dob }: IStudent = req.body;
     const results = await Student.findByIdAndUpdate(id, { name, dob }, { runValidators: true, lean: true, new: true, sanitizeFilter: true }).orFail();
     return res.status(200).json(results);
@@ -54,7 +50,6 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
 export const deleteStudent = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id } = req.params;
-    if(!id) throw { name: "QueryError", message: "Missing student Id."}
     const results = await Student.findByIdAndDelete(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){

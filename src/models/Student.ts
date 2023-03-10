@@ -1,10 +1,13 @@
 import { Schema, model, Types } from "mongoose";
 import { IName, IStudent } from "../interfaces/Model-Interfaces"
 
-// Mongoose Schemas
-// Had to modify schematypes.d.ts in mongoose/types, in the "class SchemaTypeOptions<T>"
-// "cast" was set only to string, changed to "string | boolean" to allow mongoose disable casting
-// for a single path - https://thecodebarbarian.com/whats-new-in-mongoose-5-11-custom-casting-for-paths.html
+/*
+* Mongoose Schemas
+* Had to modify schematypes.d.ts in mongoose/types, in the "class SchemaTypeOptions<T>"
+* "cast" was set only to string, changed to "string | boolean" to allow mongoose disable casting
+* for a single path - https://thecodebarbarian.com/whats-new-in-mongoose-5-11-custom-casting-for-paths.html
+*/
+
 const nameSchema = new Schema<IName>({
   first: {
     type: String,

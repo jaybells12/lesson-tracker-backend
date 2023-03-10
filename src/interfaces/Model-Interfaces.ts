@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import {} from "mongoose"
+import { Model } from "mongoose"
 
 export enum Role {
   Admin = "ADMIN",
@@ -32,10 +31,13 @@ export interface IUser {
   password: string;
   email: string;
   role: Role;
+  refreshToken?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface IUserMethods {
-  comparePassword(candidatePassword: string, callback: (error: Error | null, results?: boolean) => void): void;
+  comparePassword(candidatePassword: string): Promise<Boolean>;
 }
+
+export type UserModel = Model<IUser, {}, IUserMethods>

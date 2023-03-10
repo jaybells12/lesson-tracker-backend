@@ -3,11 +3,11 @@ import { Request, Response, NextFunction } from "express";
 import { IUser } from "../interfaces/Model-Interfaces"
 import { User } from "../models/User"
 /*
-  Password Hashing?, email validation? Role assignment?
+   email validation? Role assignment?
 */
 export const getUsers = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
-    const results = await User.find({}).orFail().lean();
+    const results = await User.find({}).select("-password").orFail().lean();
     return res.status(200).json(results);
   }catch(err){
     next(err);
@@ -17,7 +17,6 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction):
 export const getUserById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id } = req.params;
-    if(!id) throw { name: "QueryError", message:"Missing User Id."}
     const results = await User.findById(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){
@@ -44,7 +43,6 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id } = req.params;
-    if(!id) throw { name: "QueryError", message: "Missing User Id."}
     const { username, email, password, role }: IUser = req.body;
     const results = await User.findByIdAndUpdate(id, { username, email, password, role }, { runValidators: true, lean: true, new: true, sanitizeFilter: true }).orFail();
     return res.status(200).json(results);
@@ -56,7 +54,6 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 export const deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id } = req.params;
-    if(!id) throw { name: "QueryError", message: "Missing User Id."}
     const results = await User.findByIdAndDelete(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){

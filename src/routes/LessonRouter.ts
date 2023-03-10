@@ -1,7 +1,10 @@
 import express, { Request, Response, NextFunction } from "express";
 import * as controller from "../controllers/LessonController"
+import verifyJWT from "../middleware/verifyJWT";
 
 const router = express.Router();
+
+router.use(verifyJWT)
 
 //Read All Lessons
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
