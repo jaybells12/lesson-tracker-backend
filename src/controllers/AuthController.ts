@@ -7,6 +7,8 @@ import { USER_ROLES } from "../config/userRoles"
 
 dotenv.config()
 
+
+//Config
 const AT_EXPIRATION = "1m";
 const RT_EXPIRATION = "5m";
 const DEV_ENV = process.env.NODE_ENV === "development" ? false : true;
@@ -38,7 +40,7 @@ export const handleLogin = async ( req: Request, res: Response, next: NextFuncti
         maxAge: 5 * 60 * 1000 // Max age should equal RT_Expiration length
       }
     )
-    res.status(200).json({accessToken})
+    return res.status(200).json({accessToken})
   }catch(err){
     return next(err)
   }
@@ -49,7 +51,7 @@ export const handleLogout = async ( req: Request, res: Response, next: NextFunct
   const cookies = req.cookies;
   if(!cookies?.jwt) return res.sendStatus(204) //204 No-Content
   res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: DEV_ENV })
-  res.status(205).json({ success: true, message: "Cookie cleared." }) //205 Reset Content
+  return res.status(205).json({ success: true, message: "Cookie cleared." }) //205 Reset Content
 }
 
 //Refresh Access Token
@@ -58,7 +60,6 @@ export const handleRefresh = async ( req: Request, res: Response, next: NextFunc
     if(!process.env.REFRESH_TOKEN_SECRET) throw new CustomError("Missing Environment Variable: Refresh Token Secret", "ReferenceError")
 
     const cookies = req.cookies;
-
     if(!cookies?.jwt) return res.sendStatus(401); // Custom Auth Error? 
     
     const refreshToken: string = cookies.jwt;

@@ -3,19 +3,40 @@ import { Student } from "../models/Student"
 import { NextFunction, Request, Response } from "express";
 import { IStudent } from "../interfaces/Model-Interfaces";
 import { IStudentProgress } from "../interfaces/Controller-Interfaces"
+import CustomError from "../utilities/CustomError";
 
-export const updateSingleStudentProgress = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+export const getProgress = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  try{
+    const result = await Student.find({}).select("progress").orFail().lean();
+    return res.status(200).json(result);
+  }catch(err){
+    return next(err)
+  }
+}
+
+export const getProgressById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  try{
+    const { id } = req.params;
+    if(!id) throw new CustomError("Missing Student Id.", "Reference Error")
+    const result = await Student.findById(id).select("progress").orFail().lean();
+    return res.status(200).json(result);
+  }catch(err){
+    return next(err)
+  }
+}
+
+export const updateSingleProgress = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id }= req.params;
     const { progress }: { progress: Map<string, string> } = req.body;
     const result =  await updateProgress(id, progress);
     return res.status(200).json(result);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
-export const updateMultipleStudentsProgress = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+export const updateManyProgress = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { students }: IStudentProgress = req.body;
     const results: IStudent[] = []
@@ -24,7 +45,7 @@ export const updateMultipleStudentsProgress = async (req: Request, res: Response
     }
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -35,18 +56,21 @@ const verifyLessonId = async (id: string): Promise<void> => {
 
 //WORKER: Partial data validation, Sets or Deletes an entry
 const updateProgress = async ( id: string, progress: Map<string, string>): Promise<IStudent> => {
-  if(!id) throw { name: "QueryError", message: "Missing Student Id."}
-  if(!(progress instanceof Map)) throw { name: "SyntaxError", message: "'Progress' value should be of type 'Map'."}
-  if(progress.size === 0) throw { name: "QueryError", message: "'Progress' map is empty."}
-
-  const student = await Student.findById(id).orFail();
-  for(let [lessonId, lessonFlag] of progress){
-    await verifyLessonId(lessonId);
-    if(lessonFlag){
-      student.progress.set(lessonId, lessonFlag)
-    }else{
-      student.progress.delete(lessonId);
+  if(!id) throw new CustomError("Missing Student Id.", "Reference Error")
+  if(!(progress instanceof Map)) throw new CustomError("'Progress' value should be of type 'map'.", "TypeError")
+  if(progress.size === 0) throw new CustomError("'Progress' map is empty.", "QueryError")
+  try{
+    const student = await Student.findById(id).orFail();
+    for(let [lessonId, lessonFlag] of progress){
+      await verifyLessonId(lessonId);
+      if(lessonFlag){
+        student.progress.set(lessonId, lessonFlag)
+      }else{
+        student.progress.delete(lessonId);
+      }
     }
+    return student.save();
+  }catch(err){
+    throw err;
   }
-  return student.save();
 }
