@@ -3,3 +3,6 @@ export interface IStudentProgress {
     [studentId: string]: Map<string, string>
   }
 }
+
+
+export type IRoles = "ADMIN" | "DIRECTOR" | "GUIDE" | "PARENT";

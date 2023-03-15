@@ -29,6 +29,7 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
       name,
       dob
     })
+    student.$ignore('progress')
     const results = await student.save()
     return res.status(201).json(results);
   }catch(err){

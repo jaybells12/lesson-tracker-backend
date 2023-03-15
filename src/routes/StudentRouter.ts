@@ -1,12 +1,20 @@
 import express, { Request, Response, NextFunction } from "express";
 import * as controller from "../controllers/StudentController"
+import { IRoles } from "../interfaces/Controller-Interfaces";
 import verifyJWT from "../middleware/verifyJWT";
+import verifyUserRole from "../middleware/verifyUserRole";
 import { progressRouter } from "./ProgressRouter";
+
+const ALLOWED_ROLES: IRoles[] = [
+  "ADMIN",
+  "DIRECTOR"
+]
 
 const router = express.Router();
 
 router.use(verifyJWT)
-router.use("/progress", progressRouter)
+router.use("/progress", progressRouter) // Role access is different for these routes, so it comes before VerifyRole middleware
+router.use(verifyUserRole(ALLOWED_ROLES))
 
 //Read All Students
 router.get("/", (req: Request, res: Response, next: NextFunction) => {

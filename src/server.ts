@@ -12,14 +12,17 @@ import assignErrorStatusCode from "./middleware/assignErrorStatusCode";
 import logError from "./middleware/logError";
 import CustomError from "./utilities/CustomError";
 import cookieParser from "cookie-parser";
+import verifyJWT from "./middleware/verifyJWT";
+import verifyUserRole from "./middleware/verifyUserRole";
 
 /*
 * STORIES -- Is this only an API server? or is it going to build and serve content to the browser?
 * x create generic 404 route 
 * x create student progress related routes
 * x create auth related routes or auth router (login/logout) (Auto refreshing handled in front end)
-* @ create verify role middleware, allowed user role is stored in AT payload.
-* @ assign role verification to routes (need to figure out which routes are available to which roles)
+* x create verify role middleware, allowed user role is stored in AT payload.
+* x assign role verification to routes (need to figure out which routes are available to which roles)
+* ^^++ role assignment needs to be refined, but has as basic setup
 * @ Using ReferenceError for missing values, need to add and change everywhere (verify error messaging and naming convention is consistent)
 * @ service workers for controller functions?
 * @ look into email validation options
@@ -47,6 +50,15 @@ app.use('/auth', authRouter) // Login - Logout - Refresh
 app.use('/students', studentRouter); // Standard CRUD + Progress Routes
 app.use('/lessons', lessonRouter); // Standard CRUD
 app.use('/users', userRouter); // Standard CRUD
+
+//Testing Route
+app.get('/test', verifyJWT, verifyUserRole(['ADMIN']), (req, res) => {
+  res.status(200).json({
+    success: true,
+    user: ('username' in req) ? req.username : null,
+    role: ('role' in req) ? req.role : null,
+  })
+})
 
 //Error Handling Middleware
 app.use([logError, assignErrorStatusCode, handleError])

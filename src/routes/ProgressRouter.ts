@@ -1,7 +1,16 @@
 import express, { Request, Response, NextFunction } from "express"
 import * as controller from "../controllers/ProgressController"
+import { IRoles } from "../interfaces/Controller-Interfaces";
+import verifyUserRole from "../middleware/verifyUserRole";
+
+const ALLOWED_ROLES: IRoles[] = [
+  "ADMIN",
+  "GUIDE"
+]
 
 const router = express.Router();
+
+router.use(verifyUserRole(ALLOWED_ROLES))
 
 //Read all progress
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
