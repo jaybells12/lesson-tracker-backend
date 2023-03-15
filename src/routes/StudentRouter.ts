@@ -1,11 +1,10 @@
 import express, { Request, Response, NextFunction } from "express";
-import * as controller from "../controllers/StudentController"
-import { IRoles } from "../interfaces/Controller-Interfaces";
+import * as controller from "../controllers/StudentController";
 import verifyJWT from "../middleware/verifyJWT";
 import verifyUserRole from "../middleware/verifyUserRole";
 import { progressRouter } from "./ProgressRouter";
 
-const ALLOWED_ROLES: IRoles[] = [
+const ALLOWED_ROLES = [
   "ADMIN",
   "DIRECTOR"
 ]

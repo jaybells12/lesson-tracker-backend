@@ -1,9 +1,8 @@
 import express, { Request, Response, NextFunction } from "express"
 import * as controller from "../controllers/ProgressController"
-import { IRoles } from "../interfaces/Controller-Interfaces";
 import verifyUserRole from "../middleware/verifyUserRole";
 
-const ALLOWED_ROLES: IRoles[] = [
+const ALLOWED_ROLES = [
   "ADMIN",
   "GUIDE"
 ]

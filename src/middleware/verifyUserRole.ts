@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from "express"
 import { USER_ROLES } from "../config/userRoles"
-import { IRoles } from "../interfaces/Controller-Interfaces"
 import CustomError from "../utilities/CustomError"
 
-const verifyUserRole = (allowedRoles: IRoles[]) => {
+const verifyUserRole = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): Response | void => {
     //Role doesn't exist or is of wrong type: Unauthorized (Identity not known)
     if(!('role' in req) || typeof req.role !== 'number') { return next(new CustomError("Missing role.", "AuthError")) }
