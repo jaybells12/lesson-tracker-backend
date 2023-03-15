@@ -10,7 +10,7 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction):
     const results = await User.find({}).select("-password").orFail().lean();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -20,7 +20,7 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
     const results = await User.findById(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -36,7 +36,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     const results = await user.save();
     return res.status(201).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -47,7 +47,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     const results = await User.findByIdAndUpdate(id, { username, email, password, role }, { runValidators: true, lean: true, new: true, sanitizeFilter: true }).orFail();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -57,6 +57,6 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
     const results = await User.findByIdAndDelete(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }

@@ -8,7 +8,7 @@ export const getStudents = async (req: Request, res: Response, next: NextFunctio
     const results = await Student.find({}).orFail().lean();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -18,7 +18,7 @@ export const getStudentById = async (req: Request, res: Response, next: NextFunc
     const results = await Student.findById(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -33,7 +33,7 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
     const results = await student.save()
     return res.status(201).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -44,7 +44,7 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
     const results = await Student.findByIdAndUpdate(id, { name, dob }, { runValidators: true, lean: true, new: true, sanitizeFilter: true }).orFail();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }
 
@@ -54,6 +54,6 @@ export const deleteStudent = async (req: Request, res: Response, next: NextFunct
     const results = await Student.findByIdAndDelete(id).orFail().lean();
     return res.status(200).json(results);
   }catch(err){
-    next(err);
+    return next(err);
   }
 }

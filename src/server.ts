@@ -22,11 +22,12 @@ import verifyUserRole from "./middleware/verifyUserRole";
 * x create auth related routes or auth router (login/logout) (Auto refreshing handled in front end)
 * x create verify role middleware, allowed user role is stored in AT payload.
 * x assign role verification to routes (need to figure out which routes are available to which roles)
-* ^^++ role assignment needs to be refined, but has as basic setup
-* @ Using ReferenceError for missing values, need to add and change everywhere (verify error messaging and naming convention is consistent)
+* @ ^^ role route protections needs to be refined, but has a basic setup
+* @ Need to implement Role assignment controls, currently done manually at User creation endpoint
+* @ ^^ Role assignment needs to be role protected. Admins > Everything, Directors > Guides, Parents (maybe guides can create parent users later on in new version)
+* x verify custom error messaging and naming conventions are consistent
 * @ service workers for controller functions?
 * @ look into email validation options
-* @ expand and test custom error handling
 * @ TESTING TESTING TESTING
 */
 

@@ -17,7 +17,7 @@ export const getProgress = async (req: Request, res: Response, next: NextFunctio
 export const getProgressById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
     const { id } = req.params;
-    if(!id) throw new CustomError("Missing Student Id.", "Reference Error")
+    if(!id) throw new CustomError("Missing ID value.", "ReferenceError")
     const result = await Student.findById(id).select("progress").orFail().lean();
     return res.status(200).json(result);
   }catch(err){
@@ -56,9 +56,9 @@ const verifyLessonId = async (id: string): Promise<void> => {
 
 //WORKER: Partial data validation, Sets or Deletes an entry
 const updateProgress = async ( id: string, progress: Map<string, string>): Promise<IStudent> => {
-  if(!id) throw new CustomError("Missing Student Id.", "Reference Error")
+  if(!id) throw new CustomError("Missing ID value.", "ReferenceError")
   if(!(progress instanceof Map)) throw new CustomError("'Progress' value should be of type 'map'.", "TypeError")
-  if(progress.size === 0) throw new CustomError("'Progress' map is empty.", "QueryError")
+  if(progress.size === 0) throw new CustomError("'Progress' map is empty.", "ReferenceError")
   try{
     const student = await Student.findById(id).orFail();
     for(let [lessonId, lessonFlag] of progress){

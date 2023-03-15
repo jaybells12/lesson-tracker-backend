@@ -22,7 +22,7 @@ export const handleLogin = async ( req: Request, res: Response, next: NextFuncti
 
     const user = await User.findOne({username}).orFail();
     const match = await user.comparePassword(password);
-    if(!match) return res.sendStatus(401) // Can I throw an Error here instead? maybe redirect(401, loginpage)
+    if(!match) throw new CustomError("Invalid username or password.", "AuthError")
 
     const accessToken = createAccessToken(user.username, USER_ROLES[user.role])
     const refreshToken = createRefreshToken(user.username);
@@ -57,10 +57,10 @@ export const handleLogout = async ( req: Request, res: Response, next: NextFunct
 //Refresh Access Token
 export const handleRefresh = async ( req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try{
-    if(!process.env.REFRESH_TOKEN_SECRET) throw new CustomError("Missing Environment Variable: Refresh Token Secret", "ReferenceError")
+    if(!process.env.REFRESH_TOKEN_SECRET) throw new CustomError("Missing Environment Variable: Refresh Token Secret", "EnvError")
 
     const cookies = req.cookies;
-    if(!cookies?.jwt) return res.sendStatus(401); // Custom Auth Error? 
+    if(!cookies?.jwt) throw new CustomError("Missing required cookie(s)", "AuthError")
     
     const refreshToken: string = cookies.jwt;
 
@@ -75,7 +75,7 @@ export const handleRefresh = async ( req: Request, res: Response, next: NextFunc
             const accessToken = createAccessToken(user.username, USER_ROLES[user.role])
             return res.status(200).json({ accessToken })
           }else{
-            throw new CustomError("Failure in JWT Verification", "PayloadError")
+            throw new CustomError("Failure in JWT Verification", "AuthError")
           }
         }catch(err){
           return next(err)
@@ -89,7 +89,7 @@ export const handleRefresh = async ( req: Request, res: Response, next: NextFunc
 
 //WORKER
 const createAccessToken = (username: string, role: number): string => {
-  if(!process.env.ACCESS_TOKEN_SECRET) throw new CustomError("Missing Environment Variable: Access Token Secret", "ReferenceError")
+  if(!process.env.ACCESS_TOKEN_SECRET) throw new CustomError("Missing Environment Variable: Access Token Secret", "EnvError")
   return jwt.sign(
     { username, role },
     process.env.ACCESS_TOKEN_SECRET,
@@ -99,7 +99,7 @@ const createAccessToken = (username: string, role: number): string => {
 
 //WORKER
 const createRefreshToken = (username: string): string => {
-  if(!process.env.REFRESH_TOKEN_SECRET) throw new CustomError("Missing Environment Variable: Refresh Token Secret", "ReferenceError")
+  if(!process.env.REFRESH_TOKEN_SECRET) throw new CustomError("Missing Environment Variable: Refresh Token Secret", "EnvError")
   return jwt.sign(
     { username },
     process.env.REFRESH_TOKEN_SECRET,

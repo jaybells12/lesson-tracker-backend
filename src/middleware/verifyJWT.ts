@@ -9,7 +9,7 @@ export default function verifyJWT( req: Request & { username?: string, role?: nu
   if(!process.env.ACCESS_TOKEN_SECRET) return next(new CustomError("Missing environment variable: Access Token Secret", "EnvError"))
   
   const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) return res.sendStatus(401); // Maybe throw a custom error here instead? AuthError?
+  if (!authHeader?.startsWith('Bearer ')) return next(new CustomError("Missing or invalid authorization header.", "AuthError"))
 
   const token = authHeader.split(' ')[1];
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
@@ -22,7 +22,7 @@ export default function verifyJWT( req: Request & { username?: string, role?: nu
         req.role ??= decoded.role;
         return next();
       }else{
-        throw new CustomError("Failure in JWT Verification", "PayloadError")
+        throw new CustomError("Failure in JWT Verification", "AuthError")
       }
     }catch(err){
       return next(err)
