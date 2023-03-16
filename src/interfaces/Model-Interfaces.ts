@@ -31,7 +31,6 @@ export interface IUser {
   password: string;
   email: string;
   role: Role;
-  refreshToken?: string;
   createdAt: Date;
   updatedAt: Date;
 }

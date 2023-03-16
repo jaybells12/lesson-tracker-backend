@@ -5,7 +5,10 @@ export default function assignErrorStatusCode( err: Error & { statusCode: number
     case "ReferenceError":
       err.statusCode = 400;
       break;
-    case "PayloadError" || "AuthError" || "JsonWebTokenError" || "TokenExpiredError":
+    case "PayloadError":
+    case "AuthError":
+    case "TokenExpiredError":
+    case "JsonWebTokenError":
       err.statusCode = 401;
       break;
     case "PermissionError":
@@ -14,7 +17,10 @@ export default function assignErrorStatusCode( err: Error & { statusCode: number
     case "DocumentNotFoundError":
       err.statusCode = 404;
       break;
-    case "CastError" || "ValidationError" || "ValidatorError" || "TypeError":
+    case "CastError":
+    case "ValidationError":
+    case "ValidatorError":
+    case "TypeError":
       err.statusCode = 422;
       break;
     case "EnvError":

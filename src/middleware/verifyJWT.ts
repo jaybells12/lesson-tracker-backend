@@ -1,16 +1,17 @@
 import dotenv from "dotenv";
-import { Request, Response, NextFunction } from "express"
+import { Response, NextFunction } from "express"
 import jwt from "jsonwebtoken";
+import { UserRequest } from "../interfaces/Controller-Interfaces";
 import CustomError from "../utilities/CustomError";
 
 dotenv.config();
 
-export default function verifyJWT( req: Request & { username?: string, role?: number }, res: Response, next: NextFunction): Response | void{
+export default function verifyJWT( req: UserRequest, res: Response, next: NextFunction): Response | void{
   if(!process.env.ACCESS_TOKEN_SECRET) return next(new CustomError("Missing environment variable: Access Token Secret", "EnvError"))
   
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) return next(new CustomError("Missing or invalid authorization header.", "AuthError"))
-
+  
   const token = authHeader.split(' ')[1];
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     try{

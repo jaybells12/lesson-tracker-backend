@@ -15,27 +15,32 @@ router.use(verifyJWT)
 router.use(verifyUserRole(ALLOWED_ROLES))
 
 //Read All Lessons
+// @@ Permissions: Director, Guide
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   controller.getLessons(req, res, next);
 })
 
 //Create One Lesson
-router.post("/", (req: Request, res: Response, next: NextFunction) => {
+// @@ Permissions: Guide
+router.post("/", verifyUserRole(["ADMIN", "GUIDE"]), (req: Request, res: Response, next: NextFunction) => {
   controller.createLesson(req, res, next);
 })
 
 //Read One Lesson
+// @@ Permissions: Director, Guide
 router.get("/:id", (req: Request, res: Response, next: NextFunction) => {
   controller.getLessonById(req, res, next);
 })
 
 //Update One Lesson
-router.patch("/:id", (req: Request, res: Response, next: NextFunction) => {
+// @@ Permissions: Guide
+router.patch("/:id", verifyUserRole(["ADMIN", "GUIDE"]), (req: Request, res: Response, next: NextFunction) => {
   controller.updateLesson(req, res, next);
 })
 
 //Delete One Lesson
-router.delete("/:id", (req: Request, res: Response, next: NextFunction) => {
+// @@ Permissions: Guide
+router.delete("/:id", verifyUserRole(["ADMIN", "GUIDE"]), (req: Request, res: Response, next: NextFunction) => {
   controller.deleteLesson(req, res, next);
 })
 

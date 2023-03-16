@@ -27,9 +27,6 @@ export const handleLogin = async ( req: Request, res: Response, next: NextFuncti
     const accessToken = createAccessToken(user.username, USER_ROLES[user.role])
     const refreshToken = createRefreshToken(user.username);
     
-    user.refreshToken = refreshToken;
-    await user.save()
-    
     res.cookie(
       'jwt', 
       refreshToken, 

@@ -38,10 +38,6 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     uppercase: true,
     enum: Role,
     required: [true, "Missing required field."]
-  },
-  refreshToken: {
-    type: String,
-    cast: false,
   }
 }, { timestamps: true })
 
